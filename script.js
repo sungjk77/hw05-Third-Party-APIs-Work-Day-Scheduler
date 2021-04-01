@@ -1,37 +1,20 @@
-// // TODO: 4. What is the current time in the format: hours:minutes:seconds
-// var time = moment().format("hh:mm:ss");
-// $("#4a").text(time);
-// console.log(time);
-
-// // TODO: 5. What is the current Unix timestamp?
-// var update = function () {
-
-// var unix = moment().format("X");
-// $("#5a").text(unix);
-
-// // TODO: 6. Parse the following Unix timestamp, 1318781876, and convert into any time/date format.
-// var unixFormat = moment.unix(unix).format("MMM Do, YYYY, hh:mm:ss");
-// $("#currentDay").text(unixFormat);
-// }
-var txtArray = ["","","","","","","","",""];;
-
+var txtArray = ["","","","","","","","",""];
 var datetime = null,
     date = null,
     currentHour = null;
 
-// var update = function () {
 function update() {
-    date = moment(new Date())
-    datetime.html(date.format('dddd MMMM Do YYYY'));
+    date = moment(new Date());
+    datetime.html(date.format('dddd MMMM Do YYYY @ hh:mm A'));
 };
 
-$(document).ready(function(){
-    datetime = $('#currentDay')
+$(document).ready(function() {
+    datetime = $('#currentDay');
     update();
-    setInterval(update, 1000);
+    setInterval(update, 6000);  //keeps updating every minute if I want to display time
 });
 
-function highlightHour(curH) {
+function highlightHour(curH) {  //highlights every hour according to placement
     for(var i=9; i<=17; i++) {
         if (curH == i) {
            $("#"+i+"-row").addClass("present");
@@ -44,45 +27,34 @@ function highlightHour(curH) {
         }
     }
 }
-date = moment(new Date())
-currentHour=(date.format('H'));
-highlightHour(currentHour);
 
-function saveText(num) {
-  var tempText = "#"+num+"-text";
-  var txtArea = $(tempText).val();
-  txtArray = loadText(txtArray);
-  console.log("before save: "+txtArray);
-   if (!txtArea) {
-       txtArea="";
-   }
-   txtArray[num-9]=txtArea;
-   console.log("after save: "+txtArray);
-   localStorage.setItem("txtArray", JSON.stringify(txtArray));
-   txtArray = loadText(txtArray);
+function saveText(num) {  //function to Save the text, passing what time slot variable
+    var tempText = "#"+num+"-text";
+    var txtArea = $(tempText).val();
+    txtArray = loadText(txtArray);
+    console.log("before save: "+txtArray);  //shows data before save
+    if (!txtArea) {txtArea="";}
+    txtArray[num-9]=txtArea;
+    console.log("after save: "+txtArray);  //shows after it is saved
+    localStorage.setItem("txtArray", JSON.stringify(txtArray));
+    txtArray = loadText(txtArray);
 }
 
-function loadText(txtArray) {
+function loadText(txtArray) {  //function to load the text from memory
     txtArray = JSON.parse(localStorage.getItem("txtArray"));
-
     if(!txtArray) {  //check to see if the variable exists
-        console.log("No saved information");  //prints error message in console
-        txtArray = ["","","","","","","","",""];  //resets to default
+        console.log("- No saved information, Default created -");  //prints error message in console
+        txtArray = ["","","","","","","","",""];  //resets to default values of blank
         return txtArray;
     }
-
     for (var i=0; i<txtArray.length; i++) {
-        var tempNum = i+9;
-        $("#"+tempNum+"-text").val(txtArray[i]);
+        $("#"+(i+9)+"-text").val(txtArray[i]);  //creates variable name,advantage to jquery
     }
-  console.log(txtArray);
-  return txtArray;
-}
-
+    console.log(txtArray);
+    return txtArray;
+  }
+// run everything
 txtArray = loadText(txtArray);
-
-// if(!txtArray) {
-//     txtArray = ["","","","","","","","",""];
-//     console.log("no stored information");
-//     loadText(txtArray);
-// }
+date = moment(new Date());
+currentHour=(date.format('H')); //military time with capital H, easier to do math with
+highlightHour(currentHour);
